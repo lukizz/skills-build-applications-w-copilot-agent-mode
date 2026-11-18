@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getJson } from '../api/client.js';
 
 type Props = {
   title: string;
   description: string;
-  path: string;
+  load: () => Promise<Record<string, unknown>>;
   resultKey: string;
   emptyText: string;
   renderItem: (item: Record<string, unknown>) => ReactNode;
@@ -13,7 +12,7 @@ type Props = {
 export function CapabilityCard({
   title,
   description,
-  path,
+  load,
   resultKey,
   emptyText,
   renderItem,
@@ -26,7 +25,7 @@ export function CapabilityCard({
     setItems(null);
     setError('');
 
-    getJson<Record<string, unknown>>(path)
+    load()
       .then((data) => {
         if (!active) return;
         const result = data[resultKey];
@@ -38,7 +37,7 @@ export function CapabilityCard({
       });
 
     return () => { active = false; };
-  }, [path, resultKey]);
+  }, [load, resultKey]);
 
   return (
     <section className="card h-100">
